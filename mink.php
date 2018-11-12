@@ -7,7 +7,6 @@ use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Session;
 
-
 //$driver = new GoutteDriver();
 $driver = new Selenium2Driver('chrome');
 
@@ -30,8 +29,9 @@ $nav = $page->find('css', '.wds-tabs');
 $linkEl = $nav->find('css', 'li a');
 echo "The link text is: " . $linkEl->getText() . "\n";
 
-$selectorHandler = $session->getSelectorsHandler();
-$linkEl = $page->findLink('Wiki Activity');
+$linkEl = $page->findLink('Books');
+
+echo "The link href is: " . $linkEl->getAttribute('href') . "\n";
 
 $linkEl->click();
 echo "Page URL after click: " . $session->getCurrentUrl() . "\n";
