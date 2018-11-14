@@ -3,6 +3,5 @@
 /app/cache
 /web/bundles
 
-/.idea/vcs.xml
-/.idea/workspace.xml
+/.idea
 /.gitignore
