@@ -17,6 +17,8 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
 {
     use KernelDictionary;
 
+    private $currentUser;
+
     /**
      * Initializes context.
      *
@@ -73,6 +75,8 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
             ->getManager();
         $em->persist($user);
         $em->flush();
+
+        return $user;
     }
 
     /**
@@ -80,15 +84,15 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function thereAreProducts($count)
     {
-        for ($i = 0; $i < $count; $i++) {
-            $product = new Product();
-            $product->setName('Product ' . $i);
-            $product->setPrice(rand(10, 1000));
-            $product->setDescription('lorem');
-            $this->getEntityManager()->persist($product);
-        }
+        $this->createProducts($count);
+    }
 
-        $this->getEntityManager()->flush();
+    /**
+     * @Given I author :count products
+     */
+    public function iAuthorProducts($count)
+    {
+        $this->createProducts($count, $this->currentUser);
     }
 
     /**
@@ -115,12 +119,12 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function iAmLoggedInAsAnAdmin()
     {
-        $this->thereIsAnAdminUserWithPassword('admin', 'admin');
+        $this->currentUser = $this->thereIsAnAdminUserWithPassword('admin', 'admin');
 
         $this->visitPath('/login');
         $this->getPage()->fillField('Username', 'admin');
         $this->getPage()->fillField('Password', 'admin');
-        $this->getPage()->pressButton('Loging');
+        $this->getPage()->pressButton('Login');
     }
 
     private function getPage()
@@ -132,4 +136,21 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     {
         return $this->getContainer()->get('doctrine.orm.entity_manager');
     }
+
+    private function createProducts($count, User $author = null)
+    {
+        for ($i = 0; $i < $count; $i++) {
+            $product = new Product();
+            $product->setName('Product ' . $i);
+            $product->setPrice(rand(10, 1000));
+            $product->setDescription('lorem');
+            if ($author) {
+                $product->setAuthor($author);
+            }
+            $this->getEntityManager()->persist($product);
+        }
+
+        $this->getEntityManager()->flush();
+    }
 }
+
