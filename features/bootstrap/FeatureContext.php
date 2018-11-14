@@ -1,5 +1,6 @@
 <?php
 
+use AppBundle\Entity\User;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\PyStringNode;
@@ -13,7 +14,7 @@ require_once __DIR__.'/../../vendor/phpunit/phpunit/src/Framework/Assert/Functio
  */
 class FeatureContext extends RawMinkContext implements Context, SnippetAcceptingContext
 {
-    private $output;
+    private static $container;
 
     /**
      * Initializes context.
@@ -24,6 +25,20 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
      */
     public function __construct()
     {
+    }
+
+    /**
+     * @BeforeSuite
+     */
+    public static function bootstrapSymfony()
+    {
+        require __DIR__ . '/../../app/autoload.php';
+        require __DIR__ . '/../../app/AppKernel.php';
+
+        $kernel = new AppKernel('test', true);
+        $kernel->boot();
+
+        self::$container = $kernel->getContainer();
     }
 
     /**
@@ -46,6 +61,22 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
             ->elementExists('css', '#search_submit');
 
         $button->press();
+    }
+
+    /**
+     * @Given there is an admin user :username with password :password
+     */
+    public function thereIsAnAdminUserWithPassword($username, $password)
+    {
+        $user = new User();
+        $user->setUsername($username);
+        $user->setPlainPassword($password);
+        $user->setRoles(['ROLE_ADMIN']);
+
+        $em = self::$container->get('doctrine')
+            ->getManager();
+        $em->persist($user);
+        $em->flush();
     }
 
     private function getPage()
