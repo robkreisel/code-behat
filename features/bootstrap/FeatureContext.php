@@ -127,6 +127,17 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
         $this->getPage()->pressButton('Login');
     }
 
+    /**
+     * @When I wait for the modal to load
+     */
+    public function iWaitForTheModalToLoad()
+    {
+        $this->getSession()->wait(
+            5000,
+            "$('.modal:visible').length > 0"
+        );
+    }
+
     private function getPage()
     {
         return $this->getSession()->getPage();
