@@ -3,23 +3,24 @@ Feature: Product admin panel
   As an admin
   I need to be able to add/edit/delete products
 
-  Scenario: List available products
+  Background:
     Given I am logged in as an admin
+
+  Scenario: List available products
     Given there are 5 products
+    And there is 1 product
     And I am on "/admin"
     When I click on "Products"
-    Then I should see 5 products
+    Then I should see 6 products
 
   Scenario: Products show owner
-    Given I am logged in as an admin
-    And I author 5 products
+    Given I author 5 products
     When I go to "/admin/products"
     Then I should not see "Anonymous"
 
   @javascript
   Scenario: Add a new product
-    Given I am logged in as an admin
-    And I am on "/admin/products"
+    Given I am on "/admin/products"
     When I click on "New Product"
     And I wait for the modal to load
     And I fill in "Name" with "Veloci-chew toy"
@@ -29,3 +30,11 @@ Feature: Product admin panel
     Then I should see "Product created FTW!"
     And I should see "Veloci-chew toy"
     And I should not see "Anonymous"
+
+  Scenario: Show published/unpublished
+    Given the following products exist:
+      | name | is published |
+      | Foo1 | yes          |
+      | Foo2 | no           |
+    When I go to "/admin/products/"
+    # todo

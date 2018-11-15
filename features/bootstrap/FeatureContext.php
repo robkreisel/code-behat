@@ -4,6 +4,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\SnippetAcceptingContext;
+use Behat\Gherkin\Node\TableNode;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -80,7 +81,7 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     }
 
     /**
-     * @Given there are :count products
+     * @Given there is/are :count product(s)
      */
     public function thereAreProducts($count)
     {
@@ -93,6 +94,26 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     public function iAuthorProducts($count)
     {
         $this->createProducts($count, $this->currentUser);
+    }
+
+    /**
+     * @Given the following products exist:
+     */
+    public function theFollowingProductsExist(TableNode $table)
+    {
+        foreach ($table as $row) {
+            $product = new Product();
+            $product->setName($row['name']);
+            $product->setPrice(rand(10, 1000));
+            $product->setDescription('lorem');
+
+            if ($row['is published'] == 'yes') {
+                $product->setIsPublished(true);
+            }
+
+            $this->getEntityManager()->persist($product);
+        }
+        $this->getEntityManager()->flush();
     }
 
     /**
