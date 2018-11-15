@@ -8,7 +8,9 @@ use Behat\Behat\Context\SnippetAcceptingContext;
 use Behat\Gherkin\Node\TableNode;
 use Behat\MinkExtension\Context\RawMinkContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader;
 
 require_once __DIR__.'/../../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
 
@@ -39,6 +41,17 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     {
         $purger = new ORMPurger($this->getContainer()->get('doctrine')->getManager());
         $purger->purge();
+    }
+
+    /**
+     * @BeforeScenario @fixtures
+     */
+    public function loadFixtures()
+    {
+        $loader = new ContainerAwareLoader($this->getContainer());
+        $loader->loadFromDirectory(__DIR__.'/../../src/AppBundle/DataFixtures');
+        $executor = new ORMExecutor($this->getEntityManager());
+        $executor->execute($loader->getFixtures(), true);
     }
 
     /**
