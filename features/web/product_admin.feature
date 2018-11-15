@@ -36,5 +36,6 @@ Feature: Product admin panel
       | name | is published |
       | Foo1 | yes          |
       | Foo2 | no           |
-    When I go to "/admin/products/"
-    # todo
+    When I go to "/admin/products"
+    Then the "Foo1" row should have a check mark
+

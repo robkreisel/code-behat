@@ -1,5 +1,6 @@
 <?php
 
+use Behat\Behat\Tester\Exception\PendingException;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use Behat\Behat\Context\Context;
@@ -117,6 +118,16 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
     }
 
     /**
+     * @Then the :rowText row should have a check mark
+     */
+    public function theRowShouldHaveACheckMark($rowText)
+    {
+        $row = $this->getPage()->find('css', sprintf('table tr:contains("%s")', $rowText));
+        assertNotNull($row, 'Cannot find a table row with this text!');
+        assertContains('fa-check', $row->getHtml(), 'Could not find the fa-check element in the row!');
+    }
+
+    /**
      * @When I click on :linkName
      */
     public function iClickOn($linkName)
@@ -184,5 +195,5 @@ class FeatureContext extends RawMinkContext implements Context, SnippetAccepting
 
         $this->getEntityManager()->flush();
     }
-}
 
+}
