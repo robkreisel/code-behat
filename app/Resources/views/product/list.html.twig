@@ -23,6 +23,7 @@
                         <th>Price</th>
                         <th>Author</th>
                         <th>Is Published?</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,6 +35,11 @@
                             {{ product.author|default('Anonymous') }}
                         </td>
                         <td><i class="fa fa-{{ product.isPublished ? 'check' : 'times' }}"></i></td>
+                        <td>
+                            <form action="{{ path('product_delete', {'id': product.id}) }}" method="post">
+                                <button type="submit" class="btn btn-small btn-link">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

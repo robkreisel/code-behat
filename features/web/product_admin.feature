@@ -18,6 +18,14 @@ Feature: Product admin panel
     When I go to "/admin/products"
     Then I should not see "Anonymous"
 
+  Scenario: Show published/unpublished
+    Given the following products exist:
+      | name | is published |
+      | Foo1 | yes          |
+      | Foo2 | no           |
+    When I go to "/admin/products"
+    Then the "Foo1" row should have a check mark
+
   @javascript
   Scenario: Add a new product
     Given I am on "/admin/products"
@@ -31,11 +39,13 @@ Feature: Product admin panel
     And I should see "Veloci-chew toy"
     And I should not see "Anonymous"
 
-  Scenario: Show published/unpublished
+  Scenario: Deleting a product
     Given the following products exist:
-      | name | is published |
-      | Foo1 | yes          |
-      | Foo2 | no           |
+      | name |
+      | Bar  |
+      | Foo1 |
     When I go to "/admin/products"
-    Then the "Foo1" row should have a check mark
-
+    And I press "Delete" in the "Foo1" row
+    Then I should see "The product was deleted"
+    And I should not see "Foo1"
+    But I should see "Bar"
