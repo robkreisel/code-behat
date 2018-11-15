@@ -14,12 +14,12 @@ Feature: Product admin panel
     Given I am logged in as an admin
     And I author 5 products
     When I go to "/admin/products"
-    # no products will be anonymous
     Then I should not see "Anonymous"
 
   Scenario: Add a new product
-    Given I am on "/admin/products"
-    When I click "New Product"
+    Given I am logged in as an admin
+    And I am on "/admin/products"
+    When I click on "New Product"
     And I fill in "Name" with "Veloci-chew toy"
     And I fill in "Price" with "20"
     And I fill in "Description" with "Have your velociraptor chew on this instead!"
